@@ -2,6 +2,13 @@ class Pipedream < Formula
     desc "CLI utility for Pipedream"
     homepage "https://pipedream.com"
 
+    def self.fetch_version
+      require "open-uri"
+      URI.open("https://cli.pipedream.com/LATEST_VERSION", &:read).strip
+    rescue
+      "latest"
+    end
+
     def self.fetch_checksum(url)
       require "open-uri"
       URI.open("#{url}.sha256", &:read).strip
@@ -10,25 +17,21 @@ class Pipedream < Formula
       :no_check
     end
 
-    def base_url
-      "https://cli.pipedream.com"
-    end
+    version fetch_version
 
     on_macos do
-      artifact_url = "#{base_url}/darwin/amd64/latest/pd.zip"
-      url artifact_url
-      sha256 fetch_checksum(artifact_url)
+      url "https://cli.pipedream.com/darwin/amd64/latest/pd.zip"
+      sha256 fetch_checksum("https://cli.pipedream.com/darwin/amd64/latest/pd.zip")
     end
 
     on_linux do
-      artifact_url = "#{base_url}/linux/amd64/latest/pd.zip"
-      url artifact_url
-      sha256 fetch_checksum(artifact_url)
+      url "https://cli.pipedream.com/linux/amd64/latest/pd.zip"
+      sha256 fetch_checksum("https://cli.pipedream.com/linux/amd64/latest/pd.zip")
     end
 
     # Automatically check for new versions
     livecheck do
-      url "#{base_url}/LATEST_VERSION"
+      url "https://cli.pipedream.com/LATEST_VERSION"
       regex(/^v?(\d+(?:\.\d+)+)$/i)
     end
 
