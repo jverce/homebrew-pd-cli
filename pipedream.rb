@@ -10,6 +10,10 @@ class Pipedream < Formula
       :no_check
     end
 
+    def base_url
+      "https://cli.pipedream.com"
+    end
+
     on_macos do
       artifact_url = "#{base_url}/darwin/amd64/latest/pd.zip"
       url artifact_url
@@ -26,10 +30,6 @@ class Pipedream < Formula
     livecheck do
       url "#{base_url}/LATEST_VERSION"
       regex(/^v?(\d+(?:\.\d+)+)$/i)
-    end
-
-    def base_url
-      "https://cli.pipedream.com"
     end
 
     def install
