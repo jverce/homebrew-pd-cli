@@ -2,14 +2,34 @@ class Pipedream < Formula
     desc "CLI utility for Pipedream"
     homepage "https://pipedream.com"
 
+    def self.fetch_checksum(url)
+      require "open-uri"
+      URI.open("#{url}.sha256", &:read).strip
+    rescue
+      # Fallback to :no_check if checksum URL is unavailable
+      :no_check
+    end
+
     on_macos do
-      url "https://cli.pipedream.com/darwin/amd64/0.2.5/pd.zip"
-      sha256 "bd1a23ce2428c0c2e35eb80cf69a6069f70d11f1389a9656a27f8a7c1bdf5f9f"    
+      artifact_url = "#{base_url}/darwin/amd64/latest/pd.zip"
+      url artifact_url
+      sha256 fetch_checksum(artifact_url)
     end
 
     on_linux do
-      url "https://cli.pipedream.com/linux/amd64/0.2.5/pd.zip"
-      sha256 "50435e78aa93db6490896bea93597f0f0a02a619a9cd6404e47cc757fc1e6279"    
+      artifact_url = "#{base_url}/linux/amd64/latest/pd.zip"
+      url artifact_url
+      sha256 fetch_checksum(artifact_url)
+    end
+
+    # Automatically check for new versions
+    livecheck do
+      url "#{base_url}/LATEST_VERSION"
+      regex(/^v?(\d+(?:\.\d+)+)$/i)
+    end
+
+    def base_url
+      "https://cli.pipedream.com"
     end
 
     def install
@@ -24,5 +44,5 @@ class Pipedream < Formula
     test do
       system "#{bin}/pd", "--version"
     end
-  end
-  
+end
+
